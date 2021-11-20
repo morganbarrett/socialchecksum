@@ -1,0 +1,122 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://unpkg.com/98.css">
+
+		<style>
+			html {
+				background: #008080;
+				text-align: center;
+			}
+
+			.container {
+				margin-left: -160px;
+				margin-top: -120px;
+				padding-left: 50vw;
+				padding-top: 50vh;
+			}
+
+			.window {
+				width: 320px;
+			}
+
+			fieldset, #result {
+				margin-bottom: 10px;
+			}
+
+			#result {
+				font-size: 2em;
+				font-family: sans-serif;
+				text-transform: uppercase;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="window">
+				<div class="title-bar">
+					<div class="title-bar-text">Social Checksum</div>
+					<div class="title-bar-controls">
+						<button aria-label="Minimize"></button>
+						<button aria-label="Maximize"></button>
+						<button aria-label="Close"></button>
+					</div>
+				</div>
+				<div class="window-body">
+					<form action="javascript:;" onsubmit="hash()">
+						<fieldset>
+							<div class="field-row-stacked">
+								<label for="social">Type</label>
+								<select id="social">
+									<option value="URL">URL</option>
+									<option value="Wickr">Wickr</option>
+									<option value="Insta">Instagram</option>
+									<option value="Snap">Snapchat</option>
+								</select>
+
+								<label for="input">URL/Name</label>
+								<input type="text" id="input">
+							</div>
+							<br>
+							<button>Submit</button>
+						</fieldset>
+					</form>
+
+					<ul id="result" class="tree-view" onclick="copy()" style="display: none"></ul>
+
+					<div class="status-bar">
+						<p class="status-bar-field">BTC</p>
+						<p class="status-bar-field">
+							<a href="bitcoin:bc1q03kvwqktt9wffdg5hzumd9edahg0sk798060yr">
+								bc1q03kvwqktt9wffdg5hzumd9edahg0sk798060yr
+							</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="https://cdn.jsdelivr.net/npm/hash-wasm@4/dist/xxhash32.umd.min.js"></script>
+		<script type="module">
+			import normalizeUrl from "https://cdn.jsdelivr.net/npm/normalize-url@7.0.2/index.js";
+
+			const at = "<span style='color:#999'>@</span>";
+
+			window.hash = async function(){
+				let value = input.value.trim().toLowerCase();
+				if(!value){
+					result.style.display = "none";
+					return;
+				}
+
+				if(social.value == "URL"){
+					value = normalizeUrl(value, {
+						stripProtocol: true,
+						stripHash: true,
+						removeQueryParameters: true,
+						removeDirectoryIndex: true
+
+					});
+				}
+
+				result.innerHTML = "SCS" + at + social.value + at + await hashwasm.xxhash32(value);
+				result.style.display = "block";
+			}
+
+			let block = false;
+			window.copy = function(){
+				if(block) return;
+				block = true;
+				let str = result.innerText;
+				let html = result.innerHTML;
+				navigator.clipboard.writeText(str);
+				result.innerText = "Copied to clipboard";
+				window.setTimeout(() => {
+					block = false
+					result.innerHTML = html;
+				}, 500);
+			}
+		</script>
+	</body>
+</html>
