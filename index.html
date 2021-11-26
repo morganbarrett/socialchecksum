@@ -53,6 +53,7 @@
 									<option value="Wickr">Wickr</option>
 									<option value="Insta">Instagram</option>
 									<option value="Snap">Snapchat</option>
+									<option value="Tel">Telegram</option>
 								</select>
 
 								<label for="input">URL/Name</label>
@@ -100,7 +101,7 @@
 					});
 				}
 
-				result.innerHTML = "SCS" + at + social.value + at + await hashwasm.xxhash32(value);
+				result.innerHTML = social.value + at + await hashwasm.xxhash32(value);
 				result.style.display = "block";
 			}
 
